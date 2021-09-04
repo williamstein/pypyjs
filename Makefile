@@ -15,6 +15,15 @@
 #
 # The Dockerfile next to this Makefile builds an ubuntu image satisfying these
 # constraints.
+
+.PHONEY: docker-build
+docker-build:
+	docker build -t pypyjs .
+
+.PHONEY: docker-build
+docker-run:
+	docker run -it pypyjs bash
+
 #
 # You can tweak the makefile variables below to point to such an environment.
 #

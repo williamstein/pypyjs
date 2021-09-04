@@ -7,13 +7,14 @@ USER root
 
 RUN \
      apt-get update \
-  && apt-get install -y vim libreadline-dev libz-dev libssl-dev libffi-dev libgc-dev  rsync ssh curl wget git dpkg-dev make python pypy
+  && apt-get install -y vim libreadline-dev libz-dev libssl-dev libffi-dev libgc-dev \
+     rsync ssh curl wget git dpkg-dev make python pypy cmake
 
 RUN \
      git clone https://github.com/emscripten-core/emsdk.git \
   && cd emsdk \
-  && ./emsdk install latest \
-  && ./emsdk activate latest \
+  && ./emsdk install  sdk-upstream-main-32bit  \
+  && ./emsdk activate  sdk-upstream-main-32bit    \
   && echo 'source "/emsdk/emsdk_env.sh"' >> /root/.bashrc
 
 RUN \
