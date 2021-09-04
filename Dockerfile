@@ -8,7 +8,7 @@ USER root
 RUN \
      apt-get update \
   && apt-get install -y vim libreadline-dev libz-dev libssl-dev libffi-dev libgc-dev \
-     rsync ssh curl wget git dpkg-dev make python pypy cmake
+     rsync ssh curl wget git dpkg-dev make python pypy cmake python3
 
 RUN \
      git clone https://github.com/emscripten-core/emsdk.git \
