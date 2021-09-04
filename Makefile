@@ -5,69 +5,28 @@
 # produces 32-bit code, so pypy must be translated using a 32-bit python
 # interpreter with various 32-bit support libraries.
 #
-# The recommended approach is to use the pre-built docker image for the
-# build environment, available via:
-#
-#     docker pull rfkelly/pypyjs-build
-#
 # If you'd like to use your own versions of these dependencies you
 # will need to install:
 #
 #   * a working emscripten build environment
 #   * a 32-bit pypy interpreter, for running the build
-#   * a 32-bit cpython intereter, for running the tests
+#   * a 32-bit cpython interpeter, for running the tests
 #   * 32-bit development libraries for "libffi" and "libgc"
+#
+# The Dockerfile next to this Makefile builds an ubuntu image satisfying these
+# constraints.
 #
 # You can tweak the makefile variables below to point to such an environment.
 #
 
+# 32-bit emscripten compiler
+EMCC = emcc
 
-# This runs the dockerized build commands as if they were in the current
-# directory, with write access to the current directory.  We try to do
-# the most useful thing we can for the following platforms:
-#
-# * For linux, we can mount /etc/passwd and actually run as the current
-#   user, ensuring that the built artifacts get sensible file permissions
-#   by default.
-#
-# * For docker-on-macOS, we run as root inside the docker container
-#   and assume the curdir is under /Users, meaning that docker will
-#   automagically share it with appropriate permissions.
-#
-# * For docker-on-windows-under-WSL, we run as root inside the docker
-#   container and assume the curdir somewhere under /c/, meaning that
-#   docker can automagically share it with appropriate permissions.
+# 32-bit python executable
+PYTHON = python
 
-DOCKER_IMAGE = rfkelly/pypyjs-build
-
-DOCKER_ARGS = -ti --rm -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e "CFLAGS=$$CFLAGS" -e "LDFLAGS=$$LDFLAGS" -e "EMCFLAGS=$$EMCFLAGS" -e "EMLDFLAGS=$$EMLDFLAGS" -e "IN_DOCKER=1" -e "PYTHONPATH=$$PYTHONPATH"
-
-ifeq ($(shell uname -s),Linux)
-    ifeq (,$(findstring Microsoft,$(shell uname -r)))
-        DOCKER_ARGS += -v /etc/passwd:/etc/passwd -u $(USER)
-    endif
-endif
-
-ifeq ($(IN_DOCKER), 1)
-    DOCKER =
-else
-    DOCKER = docker run $(DOCKER_ARGS) $(DOCKER_IMAGE)
-endif
-
-
-# Enable this to assist in debugging failed builds.
-# It causes PyPy to store its temp build state under ./build/
-# but has the potential to slow down builds due to file sharing overhead.
-#DOCKER_ARGS += -e "PYPY_USESSION_DIR=$(CURDIR)/build/tmp"
-
-# Change these variables if you want to use a custom build environment.
-# They must point to the emscripten compiler, a 32-bit python executable
-# and a 32-bit pypy executable.
-
-EMCC = $(DOCKER) emcc
-PYTHON = $(DOCKER) python
-PYPY = $(DOCKER) pypy
-
+# 32-bit pypy (version 2!) executable
+PYPY = pypy
 
 # The default target puts a built interpreter locally in ./lib.
 
@@ -197,12 +156,6 @@ release3-debug: ./build/pypyjs3-debug-$(VERSION).tar.gz
 ./node_modules/gulp/bin/gulp.js: package.json
 	npm install
 	touch ./node_modules/gulp/bin/gulp.js
-
-# Convenience target to launch a shell in the dockerized build environment.
-
-shell:
-	$(DOCKER) /bin/bash
-
 
 # Convenience targets for running the tests.
 
