@@ -1,4 +1,4 @@
-FROM i386/ubuntu:18.04
+FROM i386/debian:10
 
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=0 LANG=C.UTF-8 LC_ALL=C.UTF-8
 LABEL maintainer="SageMath, Inc. <office@sagemath.com>"
